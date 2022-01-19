@@ -2,6 +2,7 @@ import {Dialog,DialogContent, Typography,Button} from '@mui/material';
 import {TextField} from '@material-ui/core';
 import {Box} from '@mui/material';
 import {useState} from 'react';
+import { user_signup } from '../../Service/api';
 
 const classes={
     component:{
@@ -41,8 +42,33 @@ const initialValue={
 
 }
 
+const initial_value_user={
+    firstname:'',
+    lastname:'',
+    username:'',
+    email:'',
+    password:'',
+    phone:''
+}
+
 const Login=({open,setOpen})=>{
     const [account,setAccount]=useState(initialValue.login);
+    const [user,setUser]=useState(initial_value_user);
+
+    const handleChange=(e)=>{
+        setUser({...user,[e.target.name]:e.target.value});
+    }
+
+    const handleSubmit=async(e)=>{
+        e.preventDefault();
+        const res=await user_signup(user);
+        console.log(res);
+        if(res.data.status==='registered')
+        {
+         setUser(initial_value_user);
+         setAccount(initialValue.login);   
+        }
+    }
 
     const toggleAccount=()=>{
         setAccount(initialValue.signup);
@@ -76,13 +102,13 @@ const Login=({open,setOpen})=>{
                         </Box>
                         :
                         <Box style={classes.login}>
-                            <TextField name='firstname' label='Enter Email/Mobile Number'></TextField>
-                            <TextField style={{marginTop:15}} name='lastname' label='Enter Password'></TextField>
-                            <TextField style={{marginTop:15}} name='username' label='Enter Password'></TextField>
-                            <TextField style={{marginTop:15}} name='email' label='Enter Password'></TextField>
-                            <TextField style={{marginTop:15}} name='password' label='Enter Password'></TextField>
-                            <TextField style={{marginTop:15}} name='phone' label='Enter Password'></TextField>
-                            <Button variant='contained' style={{marginTop:20,textTransform:'none',background:'#fb641b',color:'#ffffff',height:48,borderRadius:2}} >Signup</Button>
+                            <TextField onChange={(e)=>handleChange(e)} name='firstname' label='Enter Firstname'></TextField>
+                            <TextField onChange={(e)=>handleChange(e)} style={{marginTop:15}} name='lastname' label='Enter Lastname'></TextField>
+                            <TextField onChange={(e)=>handleChange(e)} style={{marginTop:15}} name='username' label='Enter Username'></TextField>
+                            <TextField onChange={(e)=>handleChange(e)} style={{marginTop:15}} name='email' label='Enter Email'></TextField>
+                            <TextField onChange={(e)=>handleChange(e)} style={{marginTop:15}} name='password' label='Enter Password'></TextField>
+                            <TextField onChange={(e)=>handleChange(e)} style={{marginTop:15}} name='phone' label='Enter Mobile/Phone no'></TextField>
+                            <Button onClick={(e)=>{handleSubmit(e)}} variant='contained' style={{marginTop:20,textTransform:'none',background:'#fb641b',color:'#ffffff',height:48,borderRadius:2}} >Signup</Button>
                         </Box>
                         }
                     </Box>
