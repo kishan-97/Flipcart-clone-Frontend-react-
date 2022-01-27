@@ -2,7 +2,7 @@ import {Dialog,DialogContent, Typography,Button} from '@mui/material';
 import {TextField} from '@material-ui/core';
 import {Box} from '@mui/material';
 import {useState} from 'react';
-import { user_signup } from '../../Service/api';
+import { user_login, user_signup } from '../../Service/api';
 
 const classes={
     component:{
@@ -42,6 +42,7 @@ const initialValue={
 
 }
 
+
 const initial_value_user={
     firstname:'',
     lastname:'',
@@ -51,10 +52,10 @@ const initial_value_user={
     phone:''
 }
 
-const Login=({open,setOpen})=>{
-    const [account,setAccount]=useState(initialValue.login);
+const Login=({open,setOpen,setAccount})=>{
+    const [account,setUserAccount]=useState(initialValue.login);
     const [user,setUser]=useState(initial_value_user);
-
+    const [error,setError]=useState('');
     const handleChange=(e)=>{
         setUser({...user,[e.target.name]:e.target.value});
     }
@@ -66,16 +67,35 @@ const Login=({open,setOpen})=>{
         if(res.data.status==='registered')
         {
          setUser(initial_value_user);
-         setAccount(initialValue.login);   
+         setAccount(res.data.username)
+         setUserAccount(initialValue.login);   
         }
     }
 
     const toggleAccount=()=>{
-        setAccount(initialValue.signup);
+        setUserAccount(initialValue.signup);
     }
     const handleClose=()=>{
         setOpen(false);
-        setAccount(initialValue.login)
+        setError('');
+        setUserAccount(initialValue.login);
+    }
+
+    const handleLogin=async(e)=>{
+        e.preventDefault();
+        let {username,password}=user;
+        const res=await user_login({username,password});
+        console.log(res);
+        if(res.data.statusResult)
+        {
+            handleClose();
+            setUser(initial_value_user);
+            setAccount(res.data.user.username); 
+        }
+        else
+        {
+            setError(true);
+        }
     }
 
 
@@ -92,10 +112,11 @@ const Login=({open,setOpen})=>{
                             account.view==='login' ?
                         
                         <Box style={classes.login}>
-                            <TextField style={{marginTop:20}} name='username' label='Enter Email/Mobile Number'></TextField>
-                            <TextField style={{marginTop:20}} name='password' label='Enter Password'></TextField>
+                            <TextField style={{marginTop:20}} onChange={handleChange} name='username' label='Enter Email/Mobile Number'></TextField>
+                            <TextField style={{marginTop:20}} onChange={handleChange} name='password' label='Enter Password'></TextField>
+                            {error ? <Typography style={{color:'red', fontSize:10}}>Invalid Username or Password</Typography> :<></>}
                             <Typography style={{marginTop:20,fontSize:12,color:'#878787'}} >By continuing, you agree to Flipkart's Terms of Use and Privacy Policy.</Typography>
-                            <Button variant='contained' style={{marginTop:20,textTransform:'none',background:'#fb641b',color:'#ffffff',height:48,borderRadius:2}} >Login</Button>
+                            <Button variant='contained' style={{marginTop:20,textTransform:'none',background:'#fb641b',color:'#ffffff',height:48,borderRadius:2}} onClick={(e)=>handleLogin(e)} >Login</Button>
                             <Typography style={{marginTop:20,textAlign:'center',fontSize:12,color:'#878787'}} >OR</Typography>
                             <Button variant='contained' style={{marginTop:20,textTransform:'none',fontWeight:600,boxShadow:'0px 2px 4px 0px rgba(0,0,0,0.2)',background:'#ffffff',color:'#2874f0',height:48,borderRadius:2}} >Request OTP</Button>
                             <Typography onClick={()=>toggleAccount()} style={{marginTop:'auto',textAlign:'center',fontSize:14,fontWeight:600,color:'#2874f0',cursor:'pointer'}}>New to Flipcart? Create an Account</Typography>

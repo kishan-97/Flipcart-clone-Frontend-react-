@@ -1,5 +1,4 @@
 import Carousel from 'react-multi-carousel';
-import { products } from '../../constants/Data';
 import "react-multi-carousel/lib/styles.css";
 import {Box, Typography} from '@mui/material';
 import Countdown from 'react-countdown';
@@ -54,7 +53,7 @@ const renderer=({hours,minutes,seconds})=>{
     )
 };
 
-const Slide=({timer,title})=>{
+const Slide=({timer,title,products})=>{
     const timerURL = 'https://static-assets-web.flixcart.com/www/linchpin/fk-cp-zion/img/timer_a73398.svg';
     return(
         <>
@@ -80,7 +79,7 @@ const Slide=({timer,title})=>{
         keyBoardControl={true}
         autoPlaySpeed={10000}
         >
-        {products.map(product=>{
+        {products && products.map(product=>{
             return(
                 <Box style={classes.wrapper} textAlign={'center'}>
                 <img style={classes.image} src={product.url}></img>
